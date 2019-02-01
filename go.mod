@@ -1,4 +1,4 @@
-module gopkg.in/oauth2.v3
+module github.com/wangh09/oauth2
 
 require (
 	github.com/ajg/form v0.0.0-20160822230020-523a5da1a92f // indirect

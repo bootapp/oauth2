@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/tidwall/buntdb"
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/oauth2.v3/models"
-	"gopkg.in/oauth2.v3/utils/uuid"
+	"github.com/wangh09/oauth2"
+	"github.com/wangh09/oauth2/models"
+	"github.com/wangh09/oauth2/utils/uuid"
 )
 
 // NewMemoryTokenStore create a token store instance based on memory
