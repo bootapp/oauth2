@@ -23,5 +23,6 @@ type (
 	// AccessGenerate generate the access and refresh tokens interface
 	AccessGenerate interface {
 		Token(data *GenerateBasic, isGenRefresh bool) (access, refresh string, err error)
+		ExtractInfo(signedToken string) (ti TokenInfo, err error)
 	}
 )

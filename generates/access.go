@@ -3,6 +3,7 @@ package generates
 import (
 	"bytes"
 	"encoding/base64"
+	"github.com/wangh09/oauth2/errors"
 	"strconv"
 	"strings"
 
@@ -33,4 +34,7 @@ func (ag *AccessGenerate) Token(data *oauth2.GenerateBasic, isGenRefresh bool) (
 	}
 
 	return
+}
+func (ag *AccessGenerate) ExtractInfo(signedToken string) (ti oauth2.TokenInfo, err error) {
+	return nil, errors.ErrInvalidGrant
 }

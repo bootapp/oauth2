@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/wangh09/oauth2/manage"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,11 +18,16 @@ func NewDefaultServer(manager oauth2.Manager) *Server {
 	return NewServer(NewConfig(), manager)
 }
 
+func NewDefaultStatelessServer(pem []byte) *Server {
+	return NewServer(NewConfig(), manage.NewDefaultStatelessManager(pem))
+}
+
 // NewServer create authorization server
 func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 	srv := &Server{
 		Config:  cfg,
 		Manager: manager,
+		SupportedScope: "user_rw",
 	}
 
 	// default handler
@@ -32,8 +38,15 @@ func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 		return
 	}
 
-	srv.PasswordAuthorizationHandler = func(username, password string) (userID string, err error) {
+	srv.PasswordAuthorizationHandler = func(username, password, authType string) (userID string, authorities []string, err error) {
 		err = errors.ErrAccessDenied
+		return
+	}
+	srv.RefreshingScopeHandler = func(newScope, oldScope string) (allowed bool, err error) {
+		allowed = false
+		if newScope == oldScope {
+			allowed = true
+		}
 		return
 	}
 	return srv
@@ -54,6 +67,7 @@ type Server struct {
 	ExtensionFieldsHandler       ExtensionFieldsHandler
 	AccessTokenExpHandler        AccessTokenExpHandler
 	AuthorizeScopeHandler        AuthorizeScopeHandler
+	SupportedScope				 string
 }
 
 func (s *Server) redirectError(w http.ResponseWriter, req *AuthorizeRequest, err error) (uerr error) {
@@ -78,7 +92,6 @@ func (s *Server) redirect(w http.ResponseWriter, req *AuthorizeRequest, data map
 
 func (s *Server) tokenError(w http.ResponseWriter, err error) (uerr error) {
 	data, statusCode, header := s.GetErrorData(err)
-
 	uerr = s.token(w, data, header, statusCode)
 	return
 }
@@ -302,9 +315,9 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		err = errors.ErrInvalidRequest
 		return
 	}
-
+	formData := make(map[string]interface{})
+	_ = json.NewDecoder(r.Body).Decode(&formData)
 	gt = oauth2.GrantType(r.FormValue("grant_type"))
-
 	if gt.String() == "" {
 		err = errors.ErrUnsupportedGrantType
 		return
@@ -323,24 +336,74 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 
 	switch gt {
 	case oauth2.AuthorizationCode:
-		tgr.RedirectURI = r.FormValue("redirect_uri")
-		tgr.Code = r.FormValue("code")
-
-		if tgr.RedirectURI == "" ||
-			tgr.Code == "" {
+		if formData["redirect_uri"] != nil {
+			switch formData["redirect_uri"].(type) {
+			case string:
+				tgr.RedirectURI = formData["redirect_uri"].(string)
+			}
+		}
+		if tgr.RedirectURI == "" {
+			tgr.RedirectURI = r.FormValue("redirect_uri")
+		}
+		if formData["code"] != nil {
+			switch formData["code"].(type) {
+			case string:
+				tgr.Code = formData["code"].(string)
+			}
+		}
+		if tgr.Code == "" {
+			tgr.Code = r.FormValue("code")
+		}
+		if tgr.RedirectURI == "" || tgr.Code != "" {
 			err = errors.ErrInvalidRequest
-			return
 		}
 	case oauth2.PasswordCredentials:
-		tgr.Scope = r.FormValue("scope")
-		username, password := r.FormValue("username"), r.FormValue("password")
+		var username, password, authType string
+		if formData["username"] != nil {
+			switch formData["username"].(type) {
+			case string:
+				username = formData["username"].(string)
+			}
+		}
+		if username == "" {
+			username = r.FormValue("username")
+		}
 
-		if username == "" || password == "" {
+		if formData["password"] != nil {
+			switch formData["password"].(type) {
+			case string:
+				password = formData["password"].(string)
+			}
+		}
+		if password == "" {
+			password = r.FormValue("password")
+		}
+
+		if formData["authType"] != nil {
+			switch formData["authType"].(type) {
+			case string:
+				authType = formData["authType"].(string)
+			}
+		}
+		if authType == "" {
+			authType = r.FormValue("authType")
+		}
+
+		if formData["score"] != nil {
+			switch formData["score"].(type) {
+			case string:
+				tgr.Scope = formData["score"].(string)
+			}
+		}
+		if tgr.Scope == "" {
+			tgr.Scope = r.FormValue("scope")
+		}
+
+		if tgr.Scope != s.SupportedScope || username == "" || password == "" || authType == "" {
 			err = errors.ErrInvalidRequest
 			return
 		}
-
-		userID, verr := s.PasswordAuthorizationHandler(username, password)
+		userID, authorities, verr := s.PasswordAuthorizationHandler(username, password, authType)
 		if verr != nil {
 			err = verr
 			return
@@ -348,15 +411,44 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 			err = errors.ErrInvalidGrant
 			return
 		}
-
 		tgr.UserID = userID
+		tgr.Authorities = authorities
 	case oauth2.ClientCredentials:
-		tgr.Scope = r.FormValue("scope")
+		if formData["scope"] != nil {
+			switch formData["scope"].(type) {
+			case string:
+				tgr.Scope = formData["scope"].(string)
+			}
+		}
+		if tgr.Scope == "" {
+			tgr.Scope = r.FormValue("scope")
+		}
+		if tgr.Scope != s.SupportedScope {
+			err = errors.ErrInvalidGrant
+			return
+		}
 	case oauth2.Refreshing:
-		tgr.Refresh = r.FormValue("refresh_token")
-		tgr.Scope = r.FormValue("scope")
+		if formData["scope"] != nil {
+			switch formData["scope"].(type) {
+			case string:
+				tgr.Scope = formData["scope"].(string)
+			}
+		}
+		if tgr.Scope == "" {
+			tgr.Scope = r.FormValue("scope")
+		}
 
+		if formData["refresh_token"] != nil {
+			switch formData["refresh_token"].(type) {
+			case string:
+				tgr.Refresh = formData["refresh_token"].(string)
+			}
+		}
 		if tgr.Refresh == "" {
+			tgr.Refresh = r.FormValue("refresh_token")
+		}
+
+		if tgr.Refresh == "" || tgr.Scope != s.SupportedScope {
 			err = errors.ErrInvalidRequest
 		}
 	}
@@ -422,7 +514,6 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 	case oauth2.Refreshing:
 		// check scope
 		if scope, scopeFn := tgr.Scope, s.RefreshingScopeHandler; scope != "" && scopeFn != nil {
-
 			rti, verr := s.Manager.LoadRefreshToken(tgr.Refresh)
 			if verr != nil {
 				if verr == errors.ErrInvalidRefreshToken || verr == errors.ErrExpiredRefreshToken {
@@ -432,7 +523,6 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 				err = verr
 				return
 			}
-
 			allowed, verr := scopeFn(scope, rti.GetScope())
 			if verr != nil {
 				err = verr
@@ -442,7 +532,6 @@ func (s *Server) GetAccessToken(gt oauth2.GrantType, tgr *oauth2.TokenGenerateRe
 				return
 			}
 		}
-
 		rti, verr := s.Manager.RefreshAccessToken(tgr)
 		if verr != nil {
 			if verr == errors.ErrInvalidRefreshToken || verr == errors.ErrExpiredRefreshToken {

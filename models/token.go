@@ -17,6 +17,7 @@ type Token struct {
 	UserID           string        `bson:"UserID"`
 	RedirectURI      string        `bson:"RedirectURI"`
 	Scope            string        `bson:"Scope"`
+	Authorities      []string      `bson:"Authorities"`
 	Code             string        `bson:"Code"`
 	CodeCreateAt     time.Time     `bson:"CodeCreateAt"`
 	CodeExpiresIn    time.Duration `bson:"CodeExpiresIn"`
@@ -66,6 +67,15 @@ func (t *Token) SetRedirectURI(redirectURI string) {
 // GetScope get scope of authorization
 func (t *Token) GetScope() string {
 	return t.Scope
+}
+
+// SetScope get scope of authorization
+func (t *Token) SetAuthorities(authorities []string) {
+	t.Authorities = authorities
+}
+
+func (t *Token) GetAuthorities() []string {
+	return t.Authorities
 }
 
 // SetScope get scope of authorization

@@ -25,6 +25,8 @@ type (
 		SetRedirectURI(string)
 		GetScope() string
 		SetScope(string)
+		GetAuthorities () []string
+		SetAuthorities ([]string)
 
 		GetCode() string
 		SetCode(string)
