@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"github.com/gavv/httpexpect"
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/errors"
-	"github.com/wangh09/oauth2/manage"
-	"github.com/wangh09/oauth2/models"
-	"github.com/wangh09/oauth2/server"
-	"github.com/wangh09/oauth2/store"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/errors"
+	"github.com/bootapp/oauth2/manage"
+	"github.com/bootapp/oauth2/models"
+	"github.com/bootapp/oauth2/server"
+	"github.com/bootapp/oauth2/store"
 )
 
 var (

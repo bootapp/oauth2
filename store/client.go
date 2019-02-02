@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/wangh09/oauth2"
+	"github.com/bootapp/oauth2"
 )
 
 // NewClientStore create client store

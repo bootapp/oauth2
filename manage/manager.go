@@ -3,10 +3,10 @@ package manage
 import (
 	"time"
 
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/errors"
-	"github.com/wangh09/oauth2/generates"
-	"github.com/wangh09/oauth2/models"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/errors"
+	"github.com/bootapp/oauth2/generates"
+	"github.com/bootapp/oauth2/models"
 )
 
 // NewDefaultManager create to default authorization management instance

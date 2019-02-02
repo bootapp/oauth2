@@ -3,14 +3,14 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/wangh09/oauth2/manage"
+	"github.com/bootapp/oauth2/manage"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/errors"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/errors"
 )
 
 // NewDefaultServer create a default authorization server

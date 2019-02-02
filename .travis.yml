@@ -1,6 +1,6 @@
 language: go
 sudo: false
-go_import_path: github.com/wangh09/oauth2
+go_import_path: github.com/bootapp/oauth2
 go:
   - 1.11
 before_install:

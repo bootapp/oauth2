@@ -5,8 +5,8 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/utils/uuid"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/utils/uuid"
 )
 
 // NewAuthorizeGenerate create to generate the authorize code instance

@@ -3,10 +3,10 @@ package generates
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/errors"
-	"github.com/wangh09/oauth2/models"
-	"github.com/wangh09/oauth2/utils/uuid"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/errors"
+	"github.com/bootapp/oauth2/models"
+	"github.com/bootapp/oauth2/utils/uuid"
 	"strings"
 	"time"
 )

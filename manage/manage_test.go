@@ -3,10 +3,10 @@ package manage_test
 import (
 	"testing"
 
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/manage"
-	"github.com/wangh09/oauth2/models"
-	"github.com/wangh09/oauth2/store"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/manage"
+	"github.com/bootapp/oauth2/models"
+	"github.com/bootapp/oauth2/store"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

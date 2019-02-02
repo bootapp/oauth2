@@ -7,9 +7,9 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"github.com/wangh09/oauth2"
-	"github.com/wangh09/oauth2/generates"
-	"github.com/wangh09/oauth2/models"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/generates"
+	"github.com/bootapp/oauth2/models"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/wangh09/oauth2"
+	"github.com/bootapp/oauth2"
 )
 
 // Config configuration parameters

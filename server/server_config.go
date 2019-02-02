@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/wangh09/oauth2"
+	"github.com/bootapp/oauth2"
 )
 
 // SetTokenType token type

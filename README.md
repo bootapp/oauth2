@@ -31,7 +31,7 @@
 ### Download and install
 
 ``` bash
-go get -u -v github.com/wangh09/oauth2/...
+go get -u -v github.com/bootapp/oauth2/...
 ```
 
 ### Create file `server.go`
@@ -43,11 +43,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/wangh09/oauth2/errors"
-	"github.com/wangh09/oauth2/manage"
-	"github.com/wangh09/oauth2/models"
-	"github.com/wangh09/oauth2/server"
-	"github.com/wangh09/oauth2/store"
+	"github.com/bootapp/oauth2/errors"
+	"github.com/bootapp/oauth2/manage"
+	"github.com/bootapp/oauth2/models"
+	"github.com/bootapp/oauth2/server"
+	"github.com/bootapp/oauth2/store"
 )
 
 func main() {
@@ -134,7 +134,7 @@ Simulation examples of authorization code model, please check [example](/example
 
 ```go
 
-import "github.com/wangh09/oauth2/generates"
+import "github.com/bootapp/oauth2/generates"
 import "github.com/dgrijalva/jwt-go"
 
 // ...
@@ -175,9 +175,9 @@ if !ok || !token.Valid {
 [Build-Status-Image]: https://travis-ci.org/go-oauth2/oauth2.svg?branch=master
 [codecov-url]: https://codecov.io/gh/go-oauth2/oauth2
 [codecov-image]: https://codecov.io/gh/go-oauth2/oauth2/branch/master/graph/badge.svg
-[reportcard-url]: https://goreportcard.com/report/github.com/wangh09/oauth2
-[reportcard-image]: https://goreportcard.com/badge/github.com/wangh09/oauth2
-[godoc-url]: https://godoc.org/github.com/wangh09/oauth2
-[godoc-image]: https://godoc.org/github.com/wangh09/oauth2?status.svg
+[reportcard-url]: https://goreportcard.com/report/github.com/bootapp/oauth2
+[reportcard-image]: https://goreportcard.com/badge/github.com/bootapp/oauth2
+[godoc-url]: https://godoc.org/github.com/bootapp/oauth2
+[godoc-image]: https://godoc.org/github.com/bootapp/oauth2?status.svg
 [license-url]: http://opensource.org/licenses/MIT
 [license-image]: https://img.shields.io/npm/l/express.svg

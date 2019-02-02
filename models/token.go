@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/wangh09/oauth2"
+	"github.com/bootapp/oauth2"
 )
 
 // NewToken create to token model instance

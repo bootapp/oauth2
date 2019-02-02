@@ -3,8 +3,8 @@ package store_test
 import (
 	"testing"
 
-	"github.com/wangh09/oauth2/models"
-	"github.com/wangh09/oauth2/store"
+	"github.com/bootapp/oauth2/models"
+	"github.com/bootapp/oauth2/store"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
