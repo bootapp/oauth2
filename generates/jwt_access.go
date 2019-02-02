@@ -20,47 +20,33 @@ type JWTAccessClaims struct {
 	Authorities []string `json:"authorities,omitempty"`
 	Ati string `json:"ati,omitempty"`
 	Jti string `json:"jti,omitempty"`
-	ExpiredAt int64  `json:"expired_at,omitempty"`
+	ExpiresAt int64  `json:"expires_at,omitempty"`
 	ClientID  string `json:"client_id,omitempty"`
 }
 
 // Valid claims verification
 func (a *JWTAccessClaims) Valid() error {
-	if time.Unix(a.ExpiredAt, 0).Before(time.Now()) {
+	if time.Unix(a.ExpiresAt, 0).Before(time.Now()) {
 		return errors.ErrInvalidAccessToken
 	}
 	return nil
 }
 
+func NewJWTAccessDecoder(pubKeyPem []byte, method jwt.SigningMethod) *JWTAccessGenerate {
+	ag := &JWTAccessGenerate{
+	}
+	err := ag.UpdatePublicKey(pubKeyPem, method)
+	if err != nil {
+		return nil
+	}
+	return ag
+}
+
 // NewJWTAccessGenerate create to generate the jwt access token instance
 func NewJWTAccessGenerate(key []byte, method jwt.SigningMethod) *JWTAccessGenerate {
-	ag := &JWTAccessGenerate{
-		SignedKey:    key,
-		SignedMethod: method,
-	}
-	if ag.isEs() {
-		privKey, err := jwt.ParseECPrivateKeyFromPEM(ag.SignedKey)
-		if err != nil {
-			return nil
-		}
-		ag.SigningKey = privKey
-		ag.PublicKey = privKey.PublicKey
-		if err != nil {
-			return nil
-		}
-	} else if ag.isRsOrPS() {
-		privKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)
-		if err != nil {
-			return nil
-		}
-		ag.SigningKey = privKey
-		ag.PublicKey = privKey.Public()
-		if err != nil {
-			return nil
-		}
-	} else if ag.isHs() {
-		ag.SigningKey = ag.SignedKey
-	} else {
+	ag := &JWTAccessGenerate{}
+	err :=ag.UpdatePrivateKey(key, method)
+	if err != nil {
 		return nil
 	}
 	return ag
@@ -74,6 +60,52 @@ type JWTAccessGenerate struct {
 	PublicKey    interface{}
 }
 
+func (ag *JWTAccessGenerate) UpdatePrivateKey(key []byte, method jwt.SigningMethod) error {
+	ag.SignedKey = key
+	ag.SignedMethod = method
+	if ag.isEs() {
+		privateKey, err := jwt.ParseECPrivateKeyFromPEM(ag.SignedKey)
+		if err != nil {
+			return err
+		}
+		ag.SigningKey = privateKey
+		ag.PublicKey = privateKey.PublicKey
+	} else if ag.isRsOrPS() {
+		privKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)
+		if err != nil {
+			return err
+		}
+		ag.SigningKey = privKey
+		ag.PublicKey = privKey.Public()
+	} else if ag.isHs() {
+		ag.SigningKey = ag.SignedKey
+	} else {
+		return errors.ErrInvalidGrant
+	}
+	return nil
+}
+
+func (ag *JWTAccessGenerate) UpdatePublicKey(key []byte, method jwt.SigningMethod) error {
+	ag.SignedMethod = method
+	if ag.isEs() {
+		publicKey, err := jwt.ParseECPublicKeyFromPEM(key)
+		if err != nil {
+			return err
+		}
+		ag.PublicKey = publicKey
+	} else if ag.isRsOrPS() {
+		publicKey, err := jwt.ParseRSAPublicKeyFromPEM(key)
+		if err != nil {
+			return err
+		}
+		ag.PublicKey = publicKey
+	} else if ag.isHs() {
+		ag.SigningKey = key
+	} else {
+		return errors.ErrInvalidGrant
+	}
+	return nil
+}
 // Token based on the UUID generated token
 func (a *JWTAccessGenerate) encode(claims *JWTAccessClaims) (signedToken string, err error) {
 	if a.SignedMethod == nil {
@@ -92,10 +124,10 @@ func (a *JWTAccessGenerate) decode(signedToken string) (claims *JWTAccessClaims,
 				return a.SignedKey, nil
 			}
 		}
-		return nil, errors.ErrInvalidRefreshToken
+		return nil, errors.ErrInvalidAccessToken
 	})
 	if err != nil {
-		return nil, errors.ErrInvalidRefreshToken
+		return nil, errors.ErrInvalidAccessToken
 	}
 	if claims, ok := token.Claims.(*JWTAccessClaims); ok && token.Valid {
 		return claims, nil
@@ -120,6 +152,7 @@ func (a *JWTAccessGenerate) ExtractInfo(signedToken string) (ti oauth2.TokenInfo
 	ti.SetAccessCreateAt(iat)
 	ti.SetRefreshCreateAt(iat)
 	ti.SetAuthorities(claims.Authorities)
+	ti.SetExpiresAt(time.Unix(claims.ExpiresAt,0))
 	return
 }
 func (a *JWTAccessGenerate) Token(data *oauth2.GenerateBasic, isGenRefresh bool) (access, refresh string, err error) {
@@ -132,7 +165,7 @@ func (a *JWTAccessGenerate) Token(data *oauth2.GenerateBasic, isGenRefresh bool)
 		Authorities: data.TokenInfo.GetAuthorities(),
 		Jti: tokenID,
 		ClientID:  data.Client.GetID(),
-		ExpiredAt: data.TokenInfo.GetAccessCreateAt().Add(data.TokenInfo.GetAccessExpiresIn()).Unix(),
+		ExpiresAt: data.TokenInfo.GetAccessCreateAt().Add(data.TokenInfo.GetAccessExpiresIn()).Unix(),
 	}
 	access, err = a.encode(claims)
 
@@ -143,7 +176,7 @@ func (a *JWTAccessGenerate) Token(data *oauth2.GenerateBasic, isGenRefresh bool)
 	if isGenRefresh {
 		claims.Ati = tokenID
 		claims.Jti = uuid.Must(uuid.NewRandom()).String()
-		claims.ExpiredAt = data.TokenInfo.GetAccessCreateAt().Add(data.TokenInfo.GetRefreshExpiresIn()).Unix()
+		claims.ExpiresAt = data.TokenInfo.GetAccessCreateAt().Add(data.TokenInfo.GetRefreshExpiresIn()).Unix()
 		refresh, err = a.encode(claims)
 	}
 

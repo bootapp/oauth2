@@ -27,6 +27,7 @@ type Token struct {
 	Refresh          string        `bson:"Refresh"`
 	RefreshCreateAt  time.Time     `bson:"RefreshCreateAt"`
 	RefreshExpiresIn time.Duration `bson:"RefreshExpiresIn"`
+	ExpiresAt        time.Time     `bson:"ExpiresAt"`
 }
 
 // New create to token model instance
@@ -76,6 +77,14 @@ func (t *Token) SetAuthorities(authorities []string) {
 
 func (t *Token) GetAuthorities() []string {
 	return t.Authorities
+}
+
+func (t *Token) GetExpiresAt() time.Time {
+	return t.ExpiresAt
+}
+
+func (t *Token) SetExpiresAt(expiresAt time.Time) {
+	t.ExpiresAt = expiresAt
 }
 
 // SetScope get scope of authorization

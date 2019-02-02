@@ -317,12 +317,12 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 	}
 	formData := make(map[string]interface{})
 	_ = json.NewDecoder(r.Body).Decode(&formData)
+
 	gt = oauth2.GrantType(r.FormValue("grant_type"))
 	if gt.String() == "" {
 		err = errors.ErrUnsupportedGrantType
 		return
 	}
-
 	clientID, clientSecret, err := s.ClientInfoHandler(r)
 	if err != nil {
 		return
@@ -389,15 +389,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 			authType = r.FormValue("authType")
 		}
 
-		if formData["score"] != nil {
-			switch formData["score"].(type) {
-			case string:
-				tgr.Scope = formData["score"].(string)
-			}
-		}
-		if tgr.Scope == "" {
-			tgr.Scope = r.FormValue("scope")
-		}
+		tgr.Scope = r.FormValue("scope")
 
 		if tgr.Scope != s.SupportedScope || username == "" || password == "" || authType == "" {
 			err = errors.ErrInvalidRequest
@@ -414,30 +406,13 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		tgr.UserID = userID
 		tgr.Authorities = authorities
 	case oauth2.ClientCredentials:
-		if formData["scope"] != nil {
-			switch formData["scope"].(type) {
-			case string:
-				tgr.Scope = formData["scope"].(string)
-			}
-		}
-		if tgr.Scope == "" {
-			tgr.Scope = r.FormValue("scope")
-		}
+		tgr.Scope = r.FormValue("scope")
 		if tgr.Scope != s.SupportedScope {
 			err = errors.ErrInvalidGrant
 			return
 		}
 	case oauth2.Refreshing:
-		if formData["scope"] != nil {
-			switch formData["scope"].(type) {
-			case string:
-				tgr.Scope = formData["scope"].(string)
-			}
-		}
-		if tgr.Scope == "" {
-			tgr.Scope = r.FormValue("scope")
-		}
-
+		tgr.Scope = r.FormValue("scope")
 		if formData["refresh_token"] != nil {
 			switch formData["refresh_token"].(type) {
 			case string:

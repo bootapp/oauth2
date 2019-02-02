@@ -28,6 +28,9 @@ type (
 		GetAuthorities () []string
 		SetAuthorities ([]string)
 
+		GetExpiresAt () time.Time
+		SetExpiresAt (time.Time)
+
 		GetCode() string
 		SetCode(string)
 		GetCodeCreateAt() time.Time
