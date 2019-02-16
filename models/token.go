@@ -15,6 +15,7 @@ func NewToken() *Token {
 type Token struct {
 	ClientID         string        `bson:"ClientID"`
 	UserID           string        `bson:"UserID"`
+	OrgID            string        `bson:"OrgID"`
 	RedirectURI      string        `bson:"RedirectURI"`
 	Scope            string        `bson:"Scope"`
 	Authorities      []string      `bson:"Authorities"`
@@ -53,6 +54,16 @@ func (t *Token) GetUserID() string {
 // SetUserID the user id
 func (t *Token) SetUserID(userID string) {
 	t.UserID = userID
+}
+
+// GetOrgID the organization id
+func (t *Token) GetOrgID() string {
+	return t.OrgID
+}
+
+// SetOrgID the organization id
+func (t *Token) SetOrgID(orgID string) {
+	t.OrgID = orgID
 }
 
 // GetRedirectURI redirect URI

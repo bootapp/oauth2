@@ -1,12 +1,12 @@
 package manage
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/bootapp/oauth2"
 	"github.com/bootapp/oauth2/errors"
 	"github.com/bootapp/oauth2/generates"
 	"github.com/bootapp/oauth2/models"
 	"github.com/bootapp/oauth2/store"
+	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
@@ -156,6 +156,7 @@ func (m *StatelessManager) GenerateAuthToken(rt oauth2.ResponseType, tgr *oauth2
 	ti := models.NewToken()
 	ti.SetClientID(tgr.ClientID)
 	ti.SetUserID(tgr.UserID)
+	ti.SetOrgID(tgr.OrgID)
 	ti.SetRedirectURI(tgr.RedirectURI)
 	ti.SetScope(tgr.Scope)
 
@@ -163,6 +164,7 @@ func (m *StatelessManager) GenerateAuthToken(rt oauth2.ResponseType, tgr *oauth2
 	td := &oauth2.GenerateBasic{
 		Client:    cli,
 		UserID:    tgr.UserID,
+		OrgID:     tgr.OrgID,
 		CreateAt:  createAt,
 		TokenInfo: ti,
 		Request:   tgr.Request,
@@ -274,7 +276,6 @@ func (m *StatelessManager) GenerateAccessToken(gt oauth2.GrantType, tgr *oauth2.
 			return
 		}
 	}
-
 	if gt == oauth2.AuthorizationCode {
 		ti, verr := m.getAndDelAuthorizationCode(tgr)
 		if verr != nil {
@@ -290,6 +291,7 @@ func (m *StatelessManager) GenerateAccessToken(gt oauth2.GrantType, tgr *oauth2.
 
 	ti := models.NewToken()
 	ti.SetClientID(tgr.ClientID)
+	ti.SetOrgID(tgr.OrgID)
 	ti.SetUserID(tgr.UserID)
 	ti.SetRedirectURI(tgr.RedirectURI)
 	ti.SetScope(tgr.Scope)
@@ -313,6 +315,7 @@ func (m *StatelessManager) GenerateAccessToken(gt oauth2.GrantType, tgr *oauth2.
 	td := &oauth2.GenerateBasic{
 		Client:    cli,
 		UserID:    tgr.UserID,
+		OrgID:     tgr.OrgID,
 		CreateAt:  createAt,
 		TokenInfo: ti,
 		Request:   tgr.Request,
@@ -341,7 +344,6 @@ func (m *StatelessManager) RefreshAccessToken(tgr *oauth2.TokenGenerateRequest) 
 		err = errors.ErrInvalidClient
 		return
 	}
-
 	ti, err := m.LoadRefreshToken(tgr.Refresh)
 	if err != nil {
 		return
@@ -353,6 +355,7 @@ func (m *StatelessManager) RefreshAccessToken(tgr *oauth2.TokenGenerateRequest) 
 	td := &oauth2.GenerateBasic {
 		Client:    cli,
 		UserID:    ti.GetUserID(),
+		OrgID:     ti.GetOrgID(),
 		CreateAt:  time.Now(),
 		TokenInfo: ti,
 		Request:   tgr.Request,

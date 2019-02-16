@@ -21,7 +21,7 @@ type (
 	UserAuthorizationHandler func(w http.ResponseWriter, r *http.Request) (userID string, err error)
 
 	// PasswordAuthorizationHandler get user id from username and password
-	PasswordAuthorizationHandler func(username, password string, authType string) (userID string, authorities []string, err error)
+	PasswordAuthorizationHandler func(username, password string, code string, authType string) (userID string, orgID string, authorities []string, err error)
 
 	// RefreshingScopeHandler check the scope of the refreshing token
 	RefreshingScopeHandler func(newScope, oldScope string) (allowed bool, err error)

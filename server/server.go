@@ -3,14 +3,13 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/bootapp/oauth2"
+	"github.com/bootapp/oauth2/errors"
 	"github.com/bootapp/oauth2/manage"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/bootapp/oauth2"
-	"github.com/bootapp/oauth2/errors"
 )
 
 // NewDefaultServer create a default authorization server
@@ -38,7 +37,7 @@ func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 		return
 	}
 
-	srv.PasswordAuthorizationHandler = func(username, password, authType string) (userID string, authorities []string, err error) {
+	srv.PasswordAuthorizationHandler = func(username, password, code, authType string) (userID string, orgID string, authorities []string, err error)  {
 		err = errors.ErrAccessDenied
 		return
 	}
@@ -223,6 +222,7 @@ func (s *Server) GetAuthorizeToken(req *AuthorizeRequest) (ti oauth2.TokenInfo, 
 	tgr := &oauth2.TokenGenerateRequest{
 		ClientID:       req.ClientID,
 		UserID:         req.UserID,
+		OrgID:          req.OrgID,
 		RedirectURI:    req.RedirectURI,
 		Scope:          req.Scope,
 		AccessTokenExp: req.AccessTokenExp,
@@ -317,7 +317,6 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 	}
 	formData := make(map[string]interface{})
 	_ = json.NewDecoder(r.Body).Decode(&formData)
-
 	gt = oauth2.GrantType(r.FormValue("grant_type"))
 	if gt.String() == "" {
 		err = errors.ErrUnsupportedGrantType
@@ -333,7 +332,6 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		ClientSecret: clientSecret,
 		Request:      r,
 	}
-
 	switch gt {
 	case oauth2.AuthorizationCode:
 		if formData["redirect_uri"] != nil {
@@ -358,7 +356,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 			err = errors.ErrInvalidRequest
 		}
 	case oauth2.PasswordCredentials:
-		var username, password, authType string
+		var username, password, code, authType string
 		if formData["username"] != nil {
 			switch formData["username"].(type) {
 			case string:
@@ -378,7 +376,15 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		if password == "" {
 			password = r.FormValue("password")
 		}
-
+		if formData["code"] != nil {
+			switch formData["code"].(type) {
+			case string:
+				code = formData["code"].(string)
+			}
+		}
+		if code == "" {
+			code = r.FormValue("code")
+		}
 		if formData["authType"] != nil {
 			switch formData["authType"].(type) {
 			case string:
@@ -395,7 +401,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 			err = errors.ErrInvalidRequest
 			return
 		}
-		userID, authorities, verr := s.PasswordAuthorizationHandler(username, password, authType)
+		userID, orgID, authorities, verr := s.PasswordAuthorizationHandler(username, password, code, authType)
 		if verr != nil {
 			err = verr
 			return
@@ -405,6 +411,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		}
 		tgr.UserID = userID
 		tgr.Authorities = authorities
+		tgr.OrgID = orgID
 	case oauth2.ClientCredentials:
 		tgr.Scope = r.FormValue("scope")
 		if tgr.Scope != s.SupportedScope {
@@ -422,10 +429,10 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		if tgr.Refresh == "" {
 			tgr.Refresh = r.FormValue("refresh_token")
 		}
-
 		if tgr.Refresh == "" || tgr.Scope != s.SupportedScope {
 			err = errors.ErrInvalidRequest
 		}
+
 	}
 	return
 }

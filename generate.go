@@ -10,6 +10,7 @@ type (
 	GenerateBasic struct {
 		Client    ClientInfo
 		UserID    string
+		OrgID     string
 		CreateAt  time.Time
 		TokenInfo TokenInfo
 		Request   *http.Request

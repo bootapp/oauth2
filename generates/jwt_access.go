@@ -2,11 +2,11 @@ package generates
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/bootapp/oauth2"
 	"github.com/bootapp/oauth2/errors"
 	"github.com/bootapp/oauth2/models"
 	"github.com/bootapp/oauth2/utils/uuid"
+	"github.com/dgrijalva/jwt-go"
 	"strings"
 	"time"
 )
@@ -15,8 +15,9 @@ import (
 type JWTAccessClaims struct {
 	Aud []string `json:"aud,omitempty"`
 	Iat int64 `json:"iat,omitempty"`
-	UserID    string `json:"user_id,omitempty"`
 	Scope string `json:"scope,omitempty"`
+	UserID    string `json:"user_id,omitempty"`
+	OrgID    string `json:"org_id,omitempty"`
 	Authorities []string `json:"authorities,omitempty"`
 	Ati string `json:"ati,omitempty"`
 	Jti string `json:"jti,omitempty"`
@@ -148,6 +149,7 @@ func (a *JWTAccessGenerate) ExtractInfo(signedToken string) (ti oauth2.TokenInfo
 	ti = models.NewToken()
 	ti.SetClientID(claims.ClientID)
 	ti.SetUserID(claims.UserID)
+	ti.SetOrgID(claims.OrgID)
 	ti.SetScope(claims.Scope)
 	ti.SetAccessCreateAt(iat)
 	ti.SetRefreshCreateAt(iat)
@@ -160,7 +162,8 @@ func (a *JWTAccessGenerate) Token(data *oauth2.GenerateBasic, isGenRefresh bool)
 	claims := &JWTAccessClaims{
 		Aud: []string{"user"},
 		Iat: data.TokenInfo.GetAccessCreateAt().Unix(),
-		UserID:    data.UserID,
+		UserID: data.UserID,
+		OrgID:  data.OrgID,
 		Scope: "user_rw",
 		Authorities: data.TokenInfo.GetAuthorities(),
 		Jti: tokenID,
