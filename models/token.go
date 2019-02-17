@@ -14,11 +14,11 @@ func NewToken() *Token {
 // Token token model
 type Token struct {
 	ClientID         string        `bson:"ClientID"`
-	UserID           string        `bson:"UserID"`
-	OrgID            string        `bson:"OrgID"`
+	UserID           int64        `bson:"UserID"`
+	OrgID            int64        `bson:"OrgID"`
 	RedirectURI      string        `bson:"RedirectURI"`
 	Scope            string        `bson:"Scope"`
-	Authorities      []string      `bson:"Authorities"`
+	Authorities      map[uint64]uint64      `bson:"Authorities"`
 	Code             string        `bson:"Code"`
 	CodeCreateAt     time.Time     `bson:"CodeCreateAt"`
 	CodeExpiresIn    time.Duration `bson:"CodeExpiresIn"`
@@ -47,22 +47,22 @@ func (t *Token) SetClientID(clientID string) {
 }
 
 // GetUserID the user id
-func (t *Token) GetUserID() string {
+func (t *Token) GetUserID() int64 {
 	return t.UserID
 }
 
 // SetUserID the user id
-func (t *Token) SetUserID(userID string) {
+func (t *Token) SetUserID(userID int64) {
 	t.UserID = userID
 }
 
 // GetOrgID the organization id
-func (t *Token) GetOrgID() string {
+func (t *Token) GetOrgID() int64 {
 	return t.OrgID
 }
 
 // SetOrgID the organization id
-func (t *Token) SetOrgID(orgID string) {
+func (t *Token) SetOrgID(orgID int64) {
 	t.OrgID = orgID
 }
 
@@ -82,11 +82,11 @@ func (t *Token) GetScope() string {
 }
 
 // SetScope get scope of authorization
-func (t *Token) SetAuthorities(authorities []string) {
+func (t *Token) SetAuthorities(authorities map[uint64]uint64) {
 	t.Authorities = authorities
 }
 
-func (t *Token) GetAuthorities() []string {
+func (t *Token) GetAuthorities() map[uint64]uint64 {
 	return t.Authorities
 }
 

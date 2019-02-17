@@ -5,7 +5,7 @@ type Client struct {
 	ID     string
 	Secret string
 	Domain string
-	UserID string
+	UserID int64
 }
 
 // GetID client id
@@ -24,6 +24,6 @@ func (c *Client) GetDomain() string {
 }
 
 // GetUserID user id
-func (c *Client) GetUserID() string {
+func (c *Client) GetUserID() int64 {
 	return c.UserID
 }

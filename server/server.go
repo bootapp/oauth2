@@ -32,12 +32,12 @@ func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 	// default handler
 	srv.ClientInfoHandler = ClientBasicHandler
 
-	srv.UserAuthorizationHandler = func(w http.ResponseWriter, r *http.Request) (userID string, err error) {
+	srv.UserAuthorizationHandler = func(w http.ResponseWriter, r *http.Request) (userID int64, err error) {
 		err = errors.ErrAccessDenied
 		return
 	}
 
-	srv.PasswordAuthorizationHandler = func(username, password, code, authType string) (userID string, orgID string, authorities []string, err error)  {
+	srv.PasswordAuthorizationHandler = func(username, password, code, authType string) (userID int64, orgID int64, authorities map[uint64]uint64, err error)  {
 		err = errors.ErrAccessDenied
 		return
 	}
@@ -259,7 +259,7 @@ func (s *Server) HandleAuthorizeRequest(w http.ResponseWriter, r *http.Request) 
 	if verr != nil {
 		err = s.redirectError(w, req, verr)
 		return
-	} else if userID == "" {
+	} else if userID == 0 {
 		return
 	}
 
@@ -405,7 +405,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		if verr != nil {
 			err = verr
 			return
-		} else if userID == "" {
+		} else if userID == 0 {
 			err = errors.ErrInvalidGrant
 			return
 		}

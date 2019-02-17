@@ -9,13 +9,13 @@ import (
 type TokenGenerateRequest struct {
 	ClientID       string
 	ClientSecret   string
-	UserID         string
-	OrgID 		   string
+	UserID         int64
+	OrgID 		   int64
 	RedirectURI    string
 	Scope          string
 	Code           string
 	Refresh        string
-	Authorities    []string
+	Authorities    map[uint64]uint64
 	AccessTokenExp time.Duration
 	Request        *http.Request
 }

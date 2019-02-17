@@ -27,7 +27,7 @@ func TestManager(t *testing.T) {
 
 		tgr := &oauth2.TokenGenerateRequest{
 			ClientID:    "1",
-			UserID:      "123456",
+			UserID:      123,
 			RedirectURI: "http://localhost/oauth2",
 			Scope:       "all",
 		}

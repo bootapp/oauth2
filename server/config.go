@@ -36,8 +36,8 @@ type AuthorizeRequest struct {
 	Scope          string
 	RedirectURI    string
 	State          string
-	UserID         string
-	OrgID		   string
+	UserID         int64
+	OrgID		   int64
 	AccessTokenExp time.Duration
 	Request        *http.Request
 }

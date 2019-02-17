@@ -91,8 +91,8 @@ func TestAuthorizeCode(t *testing.T) {
 
 	manager.MapClientStorage(clientStore(csrv.URL))
 	srv = server.NewDefaultServer(manager)
-	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID string, err error) {
-		userID = "000000"
+	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID int64, err error) {
+		userID = 1
 		return
 	})
 
@@ -117,8 +117,8 @@ func TestImplicit(t *testing.T) {
 
 	manager.MapClientStorage(clientStore(csrv.URL))
 	srv = server.NewDefaultServer(manager)
-	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID string, err error) {
-		userID = "000000"
+	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID int64, err error) {
+		userID = 1
 		return
 	})
 
@@ -140,9 +140,9 @@ func TestPasswordCredentials(t *testing.T) {
 
 	manager.MapClientStorage(clientStore(""))
 	srv = server.NewDefaultServer(manager)
-	srv.SetPasswordAuthorizationHandler(func(username, password string) (userID string, err error) {
+	srv.SetPasswordAuthorizationHandler(func(username, password, code, authType string) (userID int64,orgId int64,authorities map[uint64]uint64, err error) {
 		if username == "admin" && password == "123456" {
-			userID = "000000"
+			userID = 1
 			return
 		}
 		err = fmt.Errorf("user not found")
@@ -263,8 +263,8 @@ func TestRefreshing(t *testing.T) {
 
 	manager.MapClientStorage(clientStore(csrv.URL))
 	srv = server.NewDefaultServer(manager)
-	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID string, err error) {
-		userID = "000000"
+	srv.SetUserAuthorizationHandler(func(w http.ResponseWriter, r *http.Request) (userID int64, err error) {
+		userID = 1
 		return
 	})
 

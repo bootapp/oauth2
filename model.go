@@ -10,7 +10,7 @@ type (
 		GetID() string
 		GetSecret() string
 		GetDomain() string
-		GetUserID() string
+		GetUserID() int64
 	}
 
 	// TokenInfo the token information model interface
@@ -19,16 +19,16 @@ type (
 
 		GetClientID() string
 		SetClientID(string)
-		GetUserID() string
-		SetUserID(string)
-		GetOrgID() string
-		SetOrgID(string)
+		GetUserID() int64
+		SetUserID(int64)
+		GetOrgID() int64
+		SetOrgID(int64)
 		GetRedirectURI() string
 		SetRedirectURI(string)
 		GetScope() string
 		SetScope(string)
-		GetAuthorities () []string
-		SetAuthorities ([]string)
+		GetAuthorities () map[uint64]uint64
+		SetAuthorities (map[uint64]uint64)
 
 		GetExpiresAt () time.Time
 		SetExpiresAt (time.Time)

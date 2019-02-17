@@ -18,7 +18,7 @@ func TestAccess(t *testing.T) {
 				ID:     "123456",
 				Secret: "123456",
 			},
-			UserID:   "000000",
+			UserID:   1,
 			CreateAt: time.Now(),
 		}
 		gen := generates.NewAccessGenerate()

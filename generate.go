@@ -9,8 +9,8 @@ type (
 	// GenerateBasic provide the basis of the generated token data
 	GenerateBasic struct {
 		Client    ClientInfo
-		UserID    string
-		OrgID     string
+		UserID    int64
+		OrgID     int64
 		CreateAt  time.Time
 		TokenInfo TokenInfo
 		Request   *http.Request
