@@ -37,7 +37,7 @@ func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 		return
 	}
 
-	srv.PasswordAuthorizationHandler = func(username, password, code, authType string) (userID int64, orgID int64, authorities map[uint64]uint64, err error)  {
+	srv.PasswordAuthorizationHandler = func(username, password, code, orgId, authType string) (userID int64, orgID int64, authorities map[uint64]uint64, err error)  {
 		err = errors.ErrAccessDenied
 		return
 	}
@@ -356,7 +356,7 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 			err = errors.ErrInvalidRequest
 		}
 	case oauth2.PasswordCredentials:
-		var username, password, code, authType string
+		var username, password, code, orgId, authType string
 		if formData["username"] != nil {
 			switch formData["username"].(type) {
 			case string:
@@ -394,14 +394,23 @@ func (s *Server) ValidationTokenRequest(r *http.Request) (gt oauth2.GrantType, t
 		if authType == "" {
 			authType = r.FormValue("authType")
 		}
+		if formData["orgId"] != nil {
+			switch formData["orgId"].(type) {
+			case string:
+				orgId = formData["orgId"].(string)
+			}
+		}
+		if orgId == "" {
+			orgId = r.FormValue("orgId")
+		}
 
 		tgr.Scope = r.FormValue("scope")
 
-		if tgr.Scope != s.SupportedScope || username == "" || password == "" || authType == "" {
+		if tgr.Scope != s.SupportedScope || username == "" || authType == "" {
 			err = errors.ErrInvalidRequest
 			return
 		}
-		userID, orgID, authorities, verr := s.PasswordAuthorizationHandler(username, password, code, authType)
+		userID, orgID, authorities, verr := s.PasswordAuthorizationHandler(username, password, code, orgId, authType)
 		if verr != nil {
 			err = verr
 			return
