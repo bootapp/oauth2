@@ -27,8 +27,8 @@ type (
 		SetRedirectURI(string)
 		GetScope() string
 		SetScope(string)
-		GetAuthorities () map[uint64]uint64
-		SetAuthorities (map[uint64]uint64)
+		GetAuthorities () map[int64]int64
+		SetAuthorities (map[int64]int64)
 
 		GetExpiresAt () time.Time
 		SetExpiresAt (time.Time)

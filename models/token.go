@@ -18,7 +18,7 @@ type Token struct {
 	OrgID            int64        `bson:"OrgID"`
 	RedirectURI      string        `bson:"RedirectURI"`
 	Scope            string        `bson:"Scope"`
-	Authorities      map[uint64]uint64      `bson:"Authorities"`
+	Authorities      map[int64]int64      `bson:"Authorities"`
 	Code             string        `bson:"Code"`
 	CodeCreateAt     time.Time     `bson:"CodeCreateAt"`
 	CodeExpiresIn    time.Duration `bson:"CodeExpiresIn"`
@@ -82,11 +82,11 @@ func (t *Token) GetScope() string {
 }
 
 // SetScope get scope of authorization
-func (t *Token) SetAuthorities(authorities map[uint64]uint64) {
+func (t *Token) SetAuthorities(authorities map[int64]int64) {
 	t.Authorities = authorities
 }
 
-func (t *Token) GetAuthorities() map[uint64]uint64 {
+func (t *Token) GetAuthorities() map[int64]int64 {
 	return t.Authorities
 }
 

@@ -18,7 +18,7 @@ type JWTAccessClaims struct {
 	Scope string `json:"scope,omitempty"`
 	UserID    int64 `json:"user_id,omitempty"`
 	OrgID    int64 `json:"org_id,omitempty"`
-	Authorities map[uint64]uint64 `json:"authorities,omitempty"`
+	Authorities map[int64]int64 `json:"authorities,omitempty"`
 	Ati string `json:"ati,omitempty"`
 	Jti string `json:"jti,omitempty"`
 	ExpiresAt int64  `json:"expires_at,omitempty"`

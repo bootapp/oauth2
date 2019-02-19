@@ -140,7 +140,7 @@ func TestPasswordCredentials(t *testing.T) {
 
 	manager.MapClientStorage(clientStore(""))
 	srv = server.NewDefaultServer(manager)
-	srv.SetPasswordAuthorizationHandler(func(username, password, code, authType string) (userID int64,orgId int64,authorities map[uint64]uint64, err error) {
+	srv.SetPasswordAuthorizationHandler(func(username, password, code, orgID, authType string) (userID int64,orgId int64,authorities map[int64]int64, err error) {
 		if username == "admin" && password == "123456" {
 			userID = 1
 			return
