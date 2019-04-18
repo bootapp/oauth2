@@ -570,13 +570,13 @@ func (s *Server) GetTokenData(ti oauth2.TokenInfo) (data map[string]interface{})
 func (s *Server) HandleTokenRequest(w http.ResponseWriter, r *http.Request) (err error) {
 	gt, tgr, verr := s.ValidationTokenRequest(r)
 	if verr != nil {
-		err = s.tokenError(w, verr)
+		err = verr
 		return
 	}
 
 	ti, verr := s.GetAccessToken(gt, tgr)
 	if verr != nil {
-		err = s.tokenError(w, verr)
+		err = verr
 		return
 	}
 
