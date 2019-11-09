@@ -15,7 +15,7 @@ type TokenGenerateRequest struct {
 	Scope          string
 	Code           string
 	Refresh        string
-	Authorities    map[int64]int64
+	Authorities    map[int64][]int64
 	AccessTokenExp time.Duration
 	Request        *http.Request
 }

@@ -37,7 +37,7 @@ func NewServer(cfg *Config, manager oauth2.Manager) *Server {
 		return
 	}
 
-	srv.PasswordAuthorizationHandler = func(username, password, code, orgId, authType string) (userID int64, orgID int64, authorities map[int64]int64, err error)  {
+	srv.PasswordAuthorizationHandler = func(username, password, code, orgId, authType string) (userID int64, orgID int64, authorities map[int64][]int64, err error)  {
 		err = errors.ErrAccessDenied
 		return
 	}
