@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/go-session/session"
@@ -96,7 +97,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":9096", nil))
 }
 
-func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID string, err error) {
+func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID int64, err error) {
 	store, err := session.Start(nil, w, r)
 	if err != nil {
 		return
@@ -116,7 +117,10 @@ func userAuthorizeHandler(w http.ResponseWriter, r *http.Request) (userID string
 		return
 	}
 
-	userID = uid.(string)
+	userID, err = strconv.ParseInt(uid.(string), 10, 64)
+	if err != nil {
+		return
+	}
 	store.Delete("LoggedInUserID")
 	store.Save()
 	return

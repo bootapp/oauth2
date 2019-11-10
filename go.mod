@@ -40,3 +40,5 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	golang.org/x/oauth2 v0.0.0-20190130055435-99b60b757ec1
 )
+
+go 1.13

@@ -32,7 +32,7 @@ func testToken(store oauth2.TokenStore) {
 	Convey("Test authorization code store", func() {
 		info := &models.Token{
 			ClientID:      "1",
-			UserID:        "1_1",
+			UserID:        1,
 			RedirectURI:   "http://localhost/",
 			Scope:         "all",
 			Code:          "11_11_11",
@@ -57,7 +57,7 @@ func testToken(store oauth2.TokenStore) {
 	Convey("Test access token store", func() {
 		info := &models.Token{
 			ClientID:        "1",
-			UserID:          "1_1",
+			UserID:          1,
 			RedirectURI:     "http://localhost/",
 			Scope:           "all",
 			Access:          "1_1_1",
@@ -82,7 +82,7 @@ func testToken(store oauth2.TokenStore) {
 	Convey("Test refresh token store", func() {
 		info := &models.Token{
 			ClientID:         "1",
-			UserID:           "1_2",
+			UserID:           2,
 			RedirectURI:      "http://localhost/",
 			Scope:            "all",
 			Access:           "1_2_1",
@@ -110,7 +110,7 @@ func testToken(store oauth2.TokenStore) {
 	Convey("Test TTL", func() {
 		info := &models.Token{
 			ClientID:         "1",
-			UserID:           "1_1",
+			UserID:           2,
 			RedirectURI:      "http://localhost/",
 			Scope:            "all",
 			Access:           "1_3_1",
