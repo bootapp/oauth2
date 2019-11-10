@@ -46,6 +46,6 @@ func TestJWTAccess(t *testing.T) {
 		So(ok, ShouldBeTrue)
 		So(token.Valid, ShouldBeTrue)
 		So(claims.ClientID, ShouldEqual, "123456")
-		So(claims.UserID, ShouldEqual, "000000")
+		So(claims.UserID, ShouldEqual, 1)
 	})
 }
